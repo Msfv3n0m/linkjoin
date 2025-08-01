@@ -60,6 +60,8 @@ async def login(request: Request) -> Response:
                 return JSONResponse({"url": redirect_link, "error": 'no_password', 'email': email,
                                      'keep': data.get('keep'), 'token': token})
 
+        if not tokens.find_one({'email': email, 'token': data.get('token')}):
+            return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
         if db.login.find_one({'username': email}) is None:
             return JSONResponse({'redirect': data['redirect'], "error": 'email_not_found', 'token': token})
         elif db.login.find_one({'username': email}).get('confirmed') == "false":
