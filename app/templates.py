@@ -178,6 +178,10 @@ async def reset_password(request: Request) -> Response:
         return RedirectResponse('/login')
     else:
         data = await request.json()
+        if type(data.get('email')) is not str:
+            return JSONResponse({'error': 'Invalid email', 'code': 403}, 403)
+        if type(data.get('token')) is not str:
+            return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
         if db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
             db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
             db.login.find_one_and_update({'username': data.get('email')},
