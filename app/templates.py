@@ -32,6 +32,8 @@ async def login(request: Request) -> Response:
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         print(redirect_link)
         token = gen_session()
+        if type(data.get('token')) is not str:
+            return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
         if not tokens.find_one({'token': data.get('token')}):
             return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
         # tokens.find_one_and_delete({'token': data.get('token')})
